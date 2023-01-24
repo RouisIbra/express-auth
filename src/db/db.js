@@ -9,7 +9,7 @@ const initDB = () => {
     debug("Initializing database tables...");
     db.transaction(() => {
       db.prepare(
-        "CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, email TEXT, hash TEXT, salt TEXT)"
+        "CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, email TEXT, hash TEXT)"
       ).run();
     })();
     debug("Finished initializing database tables");
@@ -20,11 +20,11 @@ const initDB = () => {
   }
 };
 
-const createNewUser = (username, email, hash, salt) => {
+const createNewUser = (username, email, hash) => {
   const stmt = db.prepare(
-    "INSERT INTO users VALUES(NULL, $username, $email, $hash, $salt)"
+    "INSERT INTO users VALUES(NULL, $username, $email, $hash)"
   );
-  stmt.run({ username, email, hash, salt });
+  stmt.run({ username, email, hash });
 };
 
 module.exports = { initDB, createNewUser };

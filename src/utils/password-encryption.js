@@ -1,27 +1,16 @@
-const hash = require("pbkdf2-password")();
+const bcrypt = require("bcrypt");
+
+// set salt rounds
+const saltRounds = 10;
 
 const encryptPassword = (password) => {
-  return new Promise((resolve, reject) => {
-    hash({ password }, (err, pass, salt, hash) => {
-      if (err) reject(err);
-
-      resolve({ hash, salt });
-    });
-  });
+  const hash = bcrypt.hashSync(password, saltRounds);
+  return hash;
 };
 
-const verifyPassword = (password, hash, salt) => {
-  return new Promise((resolve, reject) => {
-    hash({ password, salt }, (err, pass, hash2, salt) => {
-      if (err) reject(err);
-
-      if (hash === hash2) {
-        resolve(true);
-      }
-
-      resolve(false);
-    });
-  });
+const verifyPassword = (password, hash) => {
+  const result = bcrypt.compareSync(password, hash);
+  return result;
 };
 
 module.exports = { encryptPassword, verifyPassword };

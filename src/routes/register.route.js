@@ -5,18 +5,14 @@ const { validateRegisterBody } = require("../validator/auth");
 
 const registerRouter = express.Router();
 
-registerRouter.post("/", async (req, res, next) => {
-  try {
-    const body = validateRegisterBody(req.body);
+registerRouter.post("/", (req, res) => {
+  const body = validateRegisterBody(req.body);
 
-    const { hash, salt } = await encryptPassword(body.password);
+  const hash = encryptPassword(body.password);
 
-    createNewUser(body.username, body.email, hash, salt);
+  createNewUser(body.username, body.email, hash);
 
-    res.status(200).json({ message: "Registration successfull" });
-  } catch (error) {
-    next(error);
-  }
+  res.status(200).json({ message: "Registration successfull" });
 });
 
 module.exports = registerRouter;
