@@ -27,4 +27,15 @@ const createNewUser = (username, email, hash) => {
   stmt.run({ username, email, hash });
 };
 
+process.on("exit", () => {
+  try {
+    debug("Closing database...");
+    db.close();
+    debug("Database closed successfully");
+  } catch (error) {
+    console.error("DB ERROR: Failed to close database");
+    console.error(error.stack);
+  }
+});
+
 module.exports = { initDB, createNewUser };
