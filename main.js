@@ -1,16 +1,9 @@
 const express = require("express");
 const indexRouter = require("./src/routes/index.route");
-const debugmodule = require("debug");
+const debug = require("debug")("express-auth:application");
 const morgan = require("morgan");
-
-// init debug loggers
-const debug = debugmodule("express-auth:application");
-const error = debugmodule("express-auth:error");
-
-// set debug colors
-// source https://www.ditig.com/256-colors-cheat-sheet
-error.color = 1; // 1 is red
-debug.color = 4; // 4 blue
+const { initDB } = require("./src/db/db");
+const registerRouter = require("./src/routes/register.route");
 
 // init app
 const app = express();
@@ -29,6 +22,7 @@ app.use(express.json());
 
 // mount routers
 app.use("/", indexRouter);
+app.use("/register", registerRouter);
 
 // handle not found route
 app.use((req, res, next) => {
@@ -41,7 +35,7 @@ app.use((err, req, res, next) => {
   if (res.headersSent) {
     return next(err);
   }
-  error(err.stack);
+  console.error(err.stack);
 
   // tell the client that something wrong happened but never tell him what exactly happened
   // otherwise you will be exploited
@@ -53,13 +47,18 @@ const server = app.listen(port, () => {
   debug(`Server running and listening at http://localhost:3000`);
 });
 
+// init database when server starts listening
+server.on("listening", () => {
+  initDB();
+});
+
 // graceful shutdown
 const gracefulShutdown = () => {
   if (server && server.listening) {
     debug("Closing server...");
     server.close((err) => {
       if (err) {
-        debug("Failed to gracefully shutdown server");
+        console.error("Failed to gracefully shutdown server");
       } else {
         debug("Server closed successfully");
       }
