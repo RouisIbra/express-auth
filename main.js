@@ -4,8 +4,8 @@ const debugmodule = require("debug");
 const morgan = require("morgan");
 
 // init debug loggers
-const debug = debugmodule("express-template:application");
-const error = debugmodule("express-template:error");
+const debug = debugmodule("express-auth:application");
+const error = debugmodule("express-auth:error");
 
 // set debug colors
 // source https://www.ditig.com/256-colors-cheat-sheet
