@@ -1,0 +1,20 @@
+{
+  "name": "express-template",
+  "version": "1.0.0",
+  "description": "My ExpressJS Template",
+  "main": "main.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "RouisIbra",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^4.3.4",
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.32.0",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.3"
+  }
+}
