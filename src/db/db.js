@@ -9,7 +9,7 @@ const initDB = () => {
     debug("Initializing database tables...");
     db.transaction(() => {
       db.prepare(
-        "CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, email TEXT, hash TEXT)"
+        "CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, email TEXT, hash TEXT)"
       ).run();
     })();
     debug("Finished initializing database tables");
@@ -27,6 +27,42 @@ const createNewUser = (username, email, hash) => {
   stmt.run({ username, email, hash });
 };
 
+/**
+ * @param {string} username
+ * @returns {number | null}
+ */
+const getUserIDByUsername = (username) => {
+  const stmt = db.prepare("SELECT id from users WHERE username=?");
+  const row = stmt.get(username);
+  return row ? row.id : null;
+};
+
+/**
+ * @param {number} id
+ * @returns {string}
+ */
+const getUserhash = (id) => {
+  const stmt = db.prepare("SELECT hash from users WHERE id=?");
+  const row = stmt.get(id);
+
+  if (!row) {
+    throw new Error("User not found");
+  }
+
+  return row.hash;
+};
+
+const getUserById = (id) => {
+  const stmt = db.prepare("SELECT username, email FROM users WHERE id=?");
+  const user = stmt.get(id);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user;
+};
+
 process.on("exit", () => {
   try {
     debug("Closing database...");
@@ -38,4 +74,10 @@ process.on("exit", () => {
   }
 });
 
-module.exports = { initDB, createNewUser };
+module.exports = {
+  initDB,
+  createNewUser,
+  getUserIDByUsername,
+  getUserhash,
+  getUserById,
+};

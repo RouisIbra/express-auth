@@ -1,9 +1,12 @@
 const express = require("express");
-const indexRouter = require("./src/routes/index.route");
 const debug = require("debug")("express-auth:application");
 const morgan = require("morgan");
+const session = require("express-session");
 const { initDB } = require("./src/db/db");
+
+const indexRouter = require("./src/routes/index.route");
 const registerRouter = require("./src/routes/register.route");
+const loginRouter = require("./src/routes/login.route");
 
 // init app
 const app = express();
@@ -20,9 +23,19 @@ app.use(express.urlencoded({ extended: false }));
 // parse json body
 app.use(express.json());
 
+// session middleware
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: false,
+    secret: "shhh very secret",
+  })
+);
+
 // mount routers
 app.use("/", indexRouter);
 app.use("/register", registerRouter);
+app.use("/login", loginRouter);
 
 // handle not found route
 app.use((req, res, next) => {
