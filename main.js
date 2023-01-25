@@ -2,6 +2,11 @@ const express = require("express");
 const debug = require("debug")("express-auth:application");
 const morgan = require("morgan");
 const session = require("express-session");
+
+// setup database for sessions
+const db = require("better-sqlite3")("data/sessions.db");
+const sqliteStore = require("better-sqlite3-session-store")(session);
+
 const { initDB } = require("./src/db/db");
 
 const indexRouter = require("./src/routes/index.route");
@@ -28,8 +33,14 @@ app.use(express.json());
 // session middleware
 app.use(
   session({
+    store: new sqliteStore({
+      client: db,
+      expired: {
+        clear: true,
+        intervalMs: 900000,
+      },
+    }),
     resave: false,
-    saveUninitialized: false,
     secret: "shhh very secret",
   })
 );

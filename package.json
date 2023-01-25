@@ -10,6 +10,7 @@
   "dependencies": {
     "bcrypt": "^5.1.0",
     "better-sqlite3": "^8.0.1",
+    "better-sqlite3-session-store": "^0.1.0",
     "debug": "^4.3.4",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
