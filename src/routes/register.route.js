@@ -1,11 +1,12 @@
 const express = require("express");
 const { createNewUser } = require("../db/db");
+const authRequired = require("../middlewares/auth-required");
 const { encryptPassword } = require("../utils/password-encryption");
 const { validateRegisterBody } = require("../validator/auth");
 
 const registerRouter = express.Router();
 
-registerRouter.post("/", (req, res) => {
+registerRouter.post("/", authRequired(false), (req, res) => {
   const body = validateRegisterBody(req.body);
 
   const hash = encryptPassword(body.password);

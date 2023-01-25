@@ -53,7 +53,7 @@ const getUserhash = (id) => {
 };
 
 const getUserById = (id) => {
-  const stmt = db.prepare("SELECT username, email FROM users WHERE id=?");
+  const stmt = db.prepare("SELECT id, username, email FROM users WHERE id=?");
   const user = stmt.get(id);
 
   if (!user) {

@@ -7,6 +7,8 @@ const { initDB } = require("./src/db/db");
 const indexRouter = require("./src/routes/index.route");
 const registerRouter = require("./src/routes/register.route");
 const loginRouter = require("./src/routes/login.route");
+const logoutRouter = require("./src/routes/logout.route");
+const userRouter = require("./src/routes/user.route");
 
 // init app
 const app = express();
@@ -36,6 +38,8 @@ app.use(
 app.use("/", indexRouter);
 app.use("/register", registerRouter);
 app.use("/login", loginRouter);
+app.use("/logout", logoutRouter);
+app.use("/user", userRouter);
 
 // handle not found route
 app.use((req, res, next) => {
