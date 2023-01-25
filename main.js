@@ -41,6 +41,7 @@ app.use(
       },
     }),
     resave: false,
+    saveUninitialized: false,
     secret: "shhh very secret",
   })
 );
