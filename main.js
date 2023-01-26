@@ -83,29 +83,23 @@ server.on("listening", () => {
 
 // graceful shutdown
 const gracefulShutdown = () => {
-  debug("Closing server...");
+  let exitCode = 0;
   if (server && server.listening) {
+    debug("Closing server...");
+    // close server
     server.close((err) => {
       if (err) {
         console.error("Failed to gracefully shutdown server");
-        process.exit(-1);
+        console.error(`${err.name}: ${err.message}`);
+        console.error(err.stack);
+        exitCode = -1;
       } else {
         debug("Server closed successfully");
-
-        // close sessions database
-        try {
-          if (db && db.open) {
-            debug("Closing sessions database");
-            db.close();
-            debug("Sessions database closed successfully");
-            process.exit(0);
-          }
-        } catch (error) {
-          console.error("Failed to close sessions database");
-          process.exit(-1);
-        }
       }
+      process.exit(exitCode);
     });
+  } else {
+    process.exit(exitCode);
   }
 };
 
@@ -117,3 +111,18 @@ process.on("SIGINT", gracefulShutdown);
 
 // signal handler for nodemon reload
 process.on("SIGHUP", gracefulShutdown);
+
+// close sessions database
+process.on("exit", () => {
+  try {
+    if (db && db.open) {
+      debug("Closing sessions database...");
+      db.close();
+      debug("Sessions database closed successfully");
+    }
+  } catch (error) {
+    console.error("Failed to close sessions database");
+    console.error(`${error.name}: ${error.message}`);
+    console.error(error.stack);
+  }
+});
