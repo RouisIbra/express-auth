@@ -95,23 +95,23 @@ server.on("listening", () => {
 
 // graceful shutdown
 const gracefulShutdown = () => {
-  let exitCode = 0;
+  process.exitCode = 0;
   if (server && server.listening) {
-    debug("Closing server...");
+    process.exitCode = debug("Closing server...");
     // close server
     server.close((err) => {
       if (err) {
         console.error("Failed to gracefully shutdown server");
         console.error(`${err.name}: ${err.message}`);
         console.error(err.stack);
-        exitCode = -1;
+        process.exitCode = -1;
       } else {
         debug("Server closed successfully");
       }
-      process.exit(exitCode);
+      process.exit();
     });
   } else {
-    process.exit(exitCode);
+    process.exit();
   }
 };
 
