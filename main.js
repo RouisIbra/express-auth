@@ -8,7 +8,7 @@ const helmet = require("helmet");
 const db = require("better-sqlite3")("data/sessions.db");
 const sqliteStore = require("better-sqlite3-session-store")(session);
 
-const { initDB } = require("./src/db/db");
+const { initDB, closeDB } = require("./src/db/db");
 
 const indexRouter = require("./src/routes/index.route");
 const registerRouter = require("./src/routes/register.route");
@@ -93,39 +93,7 @@ server.on("listening", () => {
   initDB();
 });
 
-// graceful shutdown
-const gracefulShutdown = () => {
-  process.exitCode = 0;
-  if (server && server.listening) {
-    process.exitCode = debug("Closing server...");
-    // close server
-    server.close((err) => {
-      if (err) {
-        console.error("Failed to gracefully shutdown server");
-        console.error(`${err.name}: ${err.message}`);
-        console.error(err.stack);
-        process.exitCode = -1;
-      } else {
-        debug("Server closed successfully");
-      }
-      process.exit();
-    });
-  } else {
-    process.exit();
-  }
-};
-
-// signal handler for process termination
-process.on("SIGTERM", gracefulShutdown);
-
-// signal handler for process interrupt (by pressing ctrl+c on console)
-process.on("SIGINT", gracefulShutdown);
-
-// signal handler for nodemon reload
-process.on("SIGHUP", gracefulShutdown);
-
-// close sessions database
-process.on("exit", () => {
+const closeSessionsDB = () => {
   try {
     if (db && db.open) {
       debug("Closing sessions database...");
@@ -137,4 +105,40 @@ process.on("exit", () => {
     console.error(`${error.name}: ${error.message}`);
     console.error(error.stack);
   }
-});
+};
+
+const closeServer = (callback) => {
+  debug("Closing...");
+  if (server && server.listening) {
+    process.exitCode = debug("Closing server...");
+    // close server
+    server.close((err) => {
+      if (err) {
+        console.error("Failed to gracefully shutdown server");
+        console.error(`${err.name}: ${err.message}`);
+        console.error(err.stack);
+      } else {
+        debug("Server closed successfully");
+      }
+      callback();
+    });
+  }
+};
+
+// graceful shutdown
+const gracefulShutdown = () => {
+  closeServer(() => {
+    closeDB();
+    closeSessionsDB();
+    process.exit();
+  });
+};
+
+// signal handler for process termination
+process.on("SIGTERM", gracefulShutdown);
+
+// signal handler for process interrupt (by pressing ctrl+c on console)
+process.on("SIGINT", gracefulShutdown);
+
+// signal handler for nodemon reload
+process.on("SIGHUP", gracefulShutdown);

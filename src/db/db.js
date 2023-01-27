@@ -63,7 +63,7 @@ const getUserById = (id) => {
   return user;
 };
 
-process.on("exit", () => {
+const closeDB = () => {
   try {
     debug("Closing database...");
     db.close();
@@ -72,10 +72,11 @@ process.on("exit", () => {
     console.error("DB ERROR: Failed to close database");
     console.error(error.stack);
   }
-});
+};
 
 module.exports = {
   initDB,
+  closeDB,
   createNewUser,
   getUserIDByUsername,
   getUserhash,
