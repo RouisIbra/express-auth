@@ -2,6 +2,7 @@ const express = require("express");
 const debug = require("debug")("express-auth:application");
 const morgan = require("morgan");
 const session = require("express-session");
+const helmet = require("helmet");
 
 // setup database for sessions
 const db = require("better-sqlite3")("data/sessions.db");
@@ -20,6 +21,12 @@ const app = express();
 
 // define port
 const port = process.env.PORT || 3000;
+
+// reduce fingerprinting
+app.disable("x-powered-by");
+
+// enable helmet
+app.use(helmet());
 
 // enable http request logger
 app.use(morgan("dev"));
@@ -43,6 +50,11 @@ app.use(
     resave: false,
     saveUninitialized: false,
     secret: "shhh very secret",
+    name: "sessionid",
+    cookie: {
+      secure: process.env.NODE_ENV === "production" ? true : "auto",
+      httpOnly: true,
+    },
   })
 );
 
