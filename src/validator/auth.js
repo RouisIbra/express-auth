@@ -33,8 +33,11 @@ const validateRegisterBody = (body) => {
   return registerBodySchema.validateSync(body);
 };
 
+/**
+ * Warning: This is async!
+ */
 const validateLoginBody = (body) => {
-  return loginBodySchema.validateSync(body);
+  return loginBodySchema.validate(body);
 };
 
 module.exports = { validateRegisterBody, validateLoginBody };
