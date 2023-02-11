@@ -30,6 +30,7 @@ const loginRouter = require("./src/routes/login.route");
 const logoutRouter = require("./src/routes/logout.route");
 const userRouter = require("./src/routes/user.route");
 const resetPwRouter = require("./src/routes/resetpw.route");
+const changePwRouter = require("./src/routes/changepw.route");
 
 // init app
 const app = express();
@@ -80,7 +81,7 @@ app.use("/login", loginRouter);
 app.use("/logout", logoutRouter);
 app.use("/user", userRouter);
 app.use("/resetpw", resetPwRouter);
-
+app.use("/changepw", changePwRouter);
 // handle not found route
 app.use((req, res, next) => {
   res.status(404).json({ message: "404 Not found" });
@@ -126,7 +127,7 @@ const closeSessionsDB = () => {
 const closeServer = (callback) => {
   debug("Closing...");
   if (server && server.listening) {
-    process.exitCode = debug("Closing server...");
+    debug("Closing server...");
     // close server
     server.close((err) => {
       if (err) {

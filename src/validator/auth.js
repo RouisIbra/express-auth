@@ -48,6 +48,12 @@ const resetPasswordBodySchema = yup
   })
   .required();
 
+const changePasswordBodySchema = yup
+  .object({
+    password: passwordSchema,
+  })
+  .required();
+
 const validateRegisterBody = (body) => {
   return registerBodySchema.validateSync(body);
 };
@@ -64,9 +70,14 @@ const validateResetPasswordBody = (body) => {
   return resetPasswordBodySchema.validateSync(body);
 };
 
+const validatechangePasswordBody = (body) => {
+  return changePasswordBodySchema.validateSync(body);
+};
+
 module.exports = {
   validateRegisterBody,
   validateLoginBody,
   validateResetPasswordRequestBody,
   validateResetPasswordBody,
+  validatechangePasswordBody,
 };
