@@ -3,10 +3,11 @@
 ## key features
 
 * Basic authetication (register, login, logout)
+* Password encryption using Bcrpyt
 * Ability to change password
 * Ability to reset password by email
 * Persistent session using cookies
-* Anti password/reset code bruteforce protection
+* Anti password/reset code bruteforce
 * Anti DDOS protection
 * OpenAPI 3 specification
 * Swagger UI
