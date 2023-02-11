@@ -3,7 +3,7 @@ const { RateLimiterMemory } = require("rate-limiter-flexible");
 const rateLimiter = new RateLimiterMemory({
   keyPrefix: "anti_ddos_ip",
   points: 15,
-  duration: 10,
+  duration: 1,
   blockDuration: 60, // 1 minute
 });
 
