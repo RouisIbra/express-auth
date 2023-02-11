@@ -18,26 +18,55 @@ const passwordSchema = yup
   .max(40, "Password length must be between 6 and 40 characters")
   .required("Password is required");
 
-const registerBodySchema = yup.object({
-  username: usernameSchema,
-  email: emailSchema,
-  password: passwordSchema,
-});
+const resetCodeSchema = yup.string().required();
 
-const loginBodySchema = yup.object({
-  username: usernameSchema,
-  password: passwordSchema,
-});
+const registerBodySchema = yup
+  .object({
+    username: usernameSchema,
+    email: emailSchema,
+    password: passwordSchema,
+  })
+  .required();
+
+const loginBodySchema = yup
+  .object({
+    username: usernameSchema,
+    password: passwordSchema,
+  })
+  .required();
+
+const resetPasswordRequestBodySchema = yup
+  .object({
+    email: emailSchema,
+  })
+  .required();
+
+const resetPasswordBodySchema = yup
+  .object({
+    resetcode: resetCodeSchema,
+    password: passwordSchema,
+  })
+  .required();
 
 const validateRegisterBody = (body) => {
   return registerBodySchema.validateSync(body);
 };
 
-/**
- * Warning: This is async!
- */
 const validateLoginBody = (body) => {
   return loginBodySchema.validate(body);
 };
 
-module.exports = { validateRegisterBody, validateLoginBody };
+const validateResetPasswordRequestBody = (body) => {
+  return resetPasswordRequestBodySchema.validate(body);
+};
+
+const validateResetPasswordBody = (body) => {
+  return resetPasswordBodySchema.validateSync(body);
+};
+
+module.exports = {
+  validateRegisterBody,
+  validateLoginBody,
+  validateResetPasswordRequestBody,
+  validateResetPasswordBody,
+};

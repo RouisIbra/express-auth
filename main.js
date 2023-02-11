@@ -3,6 +3,20 @@ const debug = require("debug")("express-auth:application");
 const morgan = require("morgan");
 const session = require("express-session");
 const helmet = require("helmet");
+const path = require("path");
+const fs = require("fs");
+
+// import dotenv variables in development mode
+if (process.env.NODE_ENV == "development") {
+  let filename = path.join(__dirname, ".env.dev");
+  if (fs.existsSync(filename)) {
+    require("dotenv").config({ path: filename });
+  } else {
+    throw new Error(
+      ".env.dev file is required to run the server. Create one from the .env.dev.template file"
+    );
+  }
+}
 
 // setup database for sessions
 const db = require("better-sqlite3")("data/sessions.db");
@@ -15,6 +29,7 @@ const registerRouter = require("./src/routes/register.route");
 const loginRouter = require("./src/routes/login.route");
 const logoutRouter = require("./src/routes/logout.route");
 const userRouter = require("./src/routes/user.route");
+const resetPwRouter = require("./src/routes/resetpw.route");
 
 // init app
 const app = express();
@@ -64,6 +79,7 @@ app.use("/register", registerRouter);
 app.use("/login", loginRouter);
 app.use("/logout", logoutRouter);
 app.use("/user", userRouter);
+app.use("/resetpw", resetPwRouter);
 
 // handle not found route
 app.use((req, res, next) => {

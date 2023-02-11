@@ -67,7 +67,10 @@ loginRouter.post("/", authRequired(false), async (req, res, next) => {
     // if userID not found end with 403 response
     if (!userID) {
       try {
-        const promises = [limiterSlowBruteByIP.consume(ipAddr)];
+        const promises = [
+          limiterSlowBruteByIP.consume(ipAddr),
+          limiterConsecutiveFailsByUsernameAndIP.consume(usernameIPkey),
+        ];
 
         await Promise.all(promises);
 
@@ -117,28 +120,28 @@ loginRouter.post("/", authRequired(false), async (req, res, next) => {
           return;
         }
       }
+    } else {
+      // generate session for loggin in user
+      req.session.regenerate((err) => {
+        if (err) throw err;
+
+        // save user's info (id, username, email) as user object in session
+        req.session.user = getUserById(userID);
+
+        if (resUsernameAndIP !== null && resUsernameAndIP.consumedPoints > 0) {
+          // Reset on successful authorisation
+          limiterConsecutiveFailsByUsernameAndIP
+            .delete(usernameIPkey)
+            .finally(() =>
+              // send success response
+              res.status(200).json({ message: "Successfully logged in" })
+            );
+        } else {
+          // send success response
+          res.status(200).json({ message: "Successfully logged in" });
+        }
+      });
     }
-
-    // generate session for loggin in user
-    req.session.regenerate((err) => {
-      if (err) throw err;
-
-      // save user's info (id, username, email) as user object in session
-      req.session.user = getUserById(userID);
-
-      if (resUsernameAndIP !== null && resUsernameAndIP.consumedPoints > 0) {
-        // Reset on successful authorisation
-        limiterConsecutiveFailsByUsernameAndIP
-          .delete(usernameIPkey)
-          .finally(() =>
-            // send success response
-            res.status(200).json({ message: "Successfully logged in" })
-          );
-      } else {
-        // send success response
-        res.status(200).json({ message: "Successfully logged in" });
-      }
-    });
   } catch (e) {
     next(e);
   }
