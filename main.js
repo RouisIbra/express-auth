@@ -31,6 +31,7 @@ const logoutRouter = require("./src/routes/logout.route");
 const userRouter = require("./src/routes/user.route");
 const resetPwRouter = require("./src/routes/resetpw.route");
 const changePwRouter = require("./src/routes/changepw.route");
+const rateLimiterMiddleware = require("./src/middlewares/rateLimiterMemory");
 
 // init app
 const app = express();
@@ -46,6 +47,9 @@ app.use(helmet());
 
 // enable http request logger
 app.use(morgan("dev"));
+
+// Simple anti ddos
+app.use(rateLimiterMiddleware);
 
 // parse urlencoded body sent from a html form
 app.use(express.urlencoded({ extended: false }));
