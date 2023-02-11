@@ -108,7 +108,9 @@ const getUserIdByPasswordResethash = (resetHash) => {
     throw new Error("Resethash is null");
   }
 
-  const stmt = db.prepare("SELECT userid FROM resetpw WHERE resethash=?");
+  const stmt = db.prepare(
+    "SELECT userid FROM resetpw WHERE resethash=? AND done=0"
+  );
   const row = stmt.get(resetHash);
   return row ? row.userid : null;
 };
@@ -126,6 +128,14 @@ const changeUserPassword = (id, newPasswordHash) => {
   stmt.run({ newhash: newPasswordHash, id });
 };
 
+const setResethashDone = (resetHash) => {
+  if (!resetHash) {
+    throw new Error("ResetHash is null");
+  }
+
+  const stmt = db.prepare("UPDATE resetpw SET done=1 WHERE resethash=?");
+  stmt.run(resetHash);
+};
 const closeDB = () => {
   try {
     debug("Closing database...");
@@ -148,4 +158,5 @@ module.exports = {
   getUserIDByEmail,
   getUserIdByPasswordResethash,
   changeUserPassword,
+  setResethashDone,
 };

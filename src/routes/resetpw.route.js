@@ -5,6 +5,7 @@ const {
   getUserIDByEmail,
   getUserIdByPasswordResethash,
   changeUserPassword,
+  setResethashDone,
 } = require("../db/db");
 const authRequired = require("../middlewares/auth-required");
 const { sendResetPasswordMail } = require("../utils/mailer");
@@ -101,6 +102,9 @@ resetPwRouter.post("/", authRequired(false), async (req, res, next) => {
 
     const newHash = encryptPassword(body.password);
     changeUserPassword(userId, newHash);
+
+    // expire reset hash
+    setResethashDone(body.resetcode);
 
     res.status(200).json({ message: "Password successfully changed" });
   } catch (error) {
