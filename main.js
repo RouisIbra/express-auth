@@ -32,6 +32,7 @@ const userRouter = require("./src/routes/user.route");
 const resetPwRouter = require("./src/routes/resetpw.route");
 const changePwRouter = require("./src/routes/changepw.route");
 const rateLimiterMiddleware = require("./src/middlewares/rateLimiterMemory");
+const apiDocsRouter = require("./src/routes/api-docs.route");
 
 // init app
 const app = express();
@@ -78,6 +79,11 @@ app.use(
   })
 );
 
+// add swagger ui
+if (process.env.NODE_ENV === "development") {
+  app.use("/api-docs", apiDocsRouter);
+}
+
 // mount routers
 app.use("/", indexRouter);
 app.use("/register", registerRouter);
@@ -106,7 +112,10 @@ app.use((err, req, res, next) => {
 
 // run server
 const server = app.listen(port, () => {
-  debug(`Server running and listening at http://localhost:3000`);
+  debug(`Server running and listening at http://localhost:${port}`);
+  if (process.env.NODE_ENV === "development") {
+    debug(`Swagger UI: http://localhost:${port}/api-docs`);
+  }
 });
 
 // init database when server starts listening

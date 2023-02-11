@@ -1,0 +1,181 @@
+openapi: 3.0.0
+info:
+  title: Express Auth API
+  description: Express authentication API from scratch
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+    description: Local developmebt server
+
+paths:
+  /user:
+    get:
+      summary: Returns current user session
+      description: Returns user session info if logged in
+      responses:
+        "200":
+          description: A json object of user's session
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/UserSession"
+        "401":
+          description: User isn't logged in
+        default:
+          description: Unexpected error
+  
+  /register:
+    post:
+      summary: Register user
+      description: Register given user info
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterBody"
+      responses:
+        "200":
+          description: Registration successful
+        "403":
+          description: Username already registered
+        default:
+          description: Unexpected error
+  /login:
+    post:
+      summary: Login user
+      description: Login by giving the username and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+      responses:
+        "200":
+          description: Login successful
+        "403":
+          description: Incorrect username or password
+          content:
+            application/json:
+              examples:
+                Incorrect password:
+                  value: 
+                    message: "Incorrect passsword"
+                Username not found:
+                  value: 
+                    message: "Username not found"
+        default:
+          description: Unexpected error
+  /logout:
+    post:
+      summary: Logout user
+      responses:
+        "200":
+          description: Successfully logged out
+        default:
+          description: Unexpected error
+  /changepw:
+    post:
+      summary: Change user password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordBody"
+      responses:
+        "200":
+          description: Password changed Successfully
+        default:
+          description: Unexpected error
+  /resetpw/send:
+    post:
+      summary: Request password reset
+      description: Send reset code via email for password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetCodeRequestBody"
+      responses:
+        "200":
+          description: reset code was sent successfully
+        default:
+          description: Unexpected error
+  /resetpw:
+    post:
+      summary: Reset password
+      description: Reset password by giving the reset code and new password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordBody"
+      responses:
+        "200":
+          description: Password was successfully reset
+        default:
+          description: Unexpected error
+components:
+  schemas:
+    Username:
+      type: string
+      example: "test1"
+    Email:
+      type: string
+      example: "test1@example.com"
+    Password:
+      type: string
+      example: "testpass"
+    UserId:
+      type: number
+      example: 1
+      minimum: 1
+    ResetCode:
+      type: string
+    UserSession:
+        type: object
+        properties:
+          id:
+            $ref: "#/components/schemas/UserId"
+          username:
+            $ref: "#/components/schemas/Username"
+          email:
+            $ref: "#/components/schemas/Email"
+    RegisterBody:
+      type: object
+      properties:
+        username:
+          $ref: "#/components/schemas/Username"
+        email:
+          $ref: "#/components/schemas/Email"
+        password:
+          $ref: "#/components/schemas/Password"
+    LoginBody:
+      type: object
+      properties:
+        username:
+          $ref: "#/components/schemas/Username"
+        password:
+          $ref: "#/components/schemas/Password"
+    ChangePasswordBody:
+      type: object
+      properties:
+        password:
+          $ref: "#/components/schemas/Password"
+    ResetCodeRequestBody:
+      type: object
+      properties:
+        email:
+          $ref: "#/components/schemas/Email"
+    ResetPasswordBody:
+      type: object
+      properties:
+        resetcode:
+          $ref: "#/components/schemas/ResetCode"
+        password:
+          $ref: "#/components/schemas/Password"

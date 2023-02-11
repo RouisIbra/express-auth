@@ -6,6 +6,6 @@
     "DEBUG": "express-auth:*"
   },
   "watch": ["main.js", "src"],
-  "ext": "js",
+  "ext": "js,yaml",
   "signal": "SIGHUP"
 }
